@@ -1,5 +1,5 @@
 import { test } from '..//utils/fixtures';
-import { expect } from '@playwright/test';
+import { expect } from '../utils/custom-expect';
 
 let authToken: string
 
@@ -22,8 +22,8 @@ test('GET Articles Test', async ({ api }) => {
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
 
-    expect(response.articles.length).toBeLessThanOrEqual(10)
-    expect(response.articlesCount).toEqual(10)
+    expect(response.articles.length).shouldBeLessThanOrEqual(10)
+    expect(response.articlesCount).shouldEqual(10)
 })
 
 test('GET Tags Test', async ({ api }) => {
@@ -32,8 +32,8 @@ test('GET Tags Test', async ({ api }) => {
         .path('/tags')
         .getRequest(200)
 
-    expect(response.tags[0]).toEqual('Test')
-    expect(response.tags.length).toBeLessThanOrEqual(10)
+    expect(response.tags[0]).shouldEqual('Test')
+    expect(response.tags.length).shouldBeLessThanOrEqual(10)
 })
 
 test('CREATE And DELETE Articles Test', async ({ api }) => {
@@ -42,7 +42,7 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .body({ "article": { "title": "Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .postRequest(201)
-    expect(articleResponse.article.title).toEqual('Test_No_krot')
+    expect(articleResponse.article.title).shouldEqual('Test_No_krot')
     const slugId = articleResponse.article.slug
 
     const articlesResponse = await api
@@ -50,7 +50,7 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponse.articles[0].title).toEqual('Test_No_krot')
+    expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot')
 
     await api
         .path(`/articles/${slugId}`)
@@ -62,7 +62,7 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponseTwo.articles[0].title).not.toEqual('Test_No_krot')
+    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot')
 })
 
 test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
@@ -71,7 +71,7 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .body({ "article": { "title": "NEW_Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .postRequest(201)
-    expect(articleResponse.article.title).toEqual('NEW_Test_No_krot')
+    expect(articleResponse.article.title).shouldEqual('NEW_Test_No_krot')
     const slugId = articleResponse.article.slug
 
     const updateArticleResponse = await api
@@ -79,7 +79,7 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .body({ "article": { "title": "Test_No_krot_UPDATED", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .putRequest(200)
-    expect(updateArticleResponse.article.title).toEqual('Test_No_krot_UPDATED')
+    expect(updateArticleResponse.article.title).shouldEqual('Test_No_krot_UPDATED')
     const newSlugId = updateArticleResponse.article.slug
 
     const articlesResponse = await api
@@ -87,7 +87,7 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponse.articles[0].title).toEqual('Test_No_krot_UPDATED')
+    expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot_UPDATED')
 
     await api
         .path(`/articles/${newSlugId}`)
@@ -99,5 +99,5 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponseTwo.articles[0].title).not.toEqual('Test_No_krot_UPDATED')
+    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot_UPDATED')
 })
