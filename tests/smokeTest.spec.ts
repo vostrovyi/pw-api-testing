@@ -3,11 +3,11 @@ import { expect } from '../utils/custom-expect';
 
 let authToken: string
 
-test.beforeAll('run before all', async ({ api }) => {
+test.beforeAll('run before all', async ({ api, config }) => {
 
     const tokenResponse = await api
         .path('/users/login')
-        .body({ "user": { "email": "no_krot@ukr.net", "password": "Qwerty@123" } })
+        .body({ "user": { "email": config.userEmail, "password": config.userPassword } })
         .postRequest(200)
     authToken = 'Token ' + tokenResponse.user.token
 })

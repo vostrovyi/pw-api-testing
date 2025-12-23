@@ -9,7 +9,7 @@ export const setCustomExpectLogger = (logger: APILogger) => {
 
 declare global {
     namespace PlaywrightTest {
-        interface Matchers<R, T>{
+        interface Matchers<R, T> {
             shouldEqual(expected: T): R
             shouldBeLessThanOrEqual(expected: T): R
         }
@@ -24,8 +24,8 @@ export const expect = baseExpect.extend({
         try {
             baseExpect(received).toEqual(expected);
             pass = true;
-            if(this.isNot){
-               logs = apiLogger.getRecentLogs() 
+            if (this.isNot) {
+                logs = apiLogger.getRecentLogs()
             }
         } catch (e: any) {
             pass = false;
@@ -52,8 +52,8 @@ export const expect = baseExpect.extend({
         try {
             baseExpect(received).toBeLessThanOrEqual(expected);
             pass = true;
-            if(this.isNot){
-               logs = apiLogger.getRecentLogs() 
+            if (this.isNot) {
+                logs = apiLogger.getRecentLogs()
             }
         } catch (e: any) {
             pass = false;
