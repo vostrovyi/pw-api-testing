@@ -1,23 +1,8 @@
 import { test } from '..//utils/fixtures';
-import { createToken } from '../helpers/createToken';
 import { expect } from '../utils/custom-expect';
-
-let authToken: string
-
-test.beforeAll('run before all', async ({ api, config }) => {
-
-    // const tokenResponse = await api
-    //     .path('/users/login')
-    //     .body({ "user": { "email": config.userEmail, "password": config.userPassword } })
-    //     .postRequest(200)
-    authToken = await createToken(config.userEmail, config.userPassword)
-})
-
-
 
 
 test('GET Articles Test', async ({ api }) => {
-
     const response = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
@@ -28,7 +13,6 @@ test('GET Articles Test', async ({ api }) => {
 })
 
 test('GET Tags Test', async ({ api }) => {
-
     const response = await api
         .path('/tags')
         .getRequest(200)
@@ -40,7 +24,6 @@ test('GET Tags Test', async ({ api }) => {
 test('CREATE And DELETE Articles Test', async ({ api }) => {
     const articleResponse = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .body({ "article": { "title": "Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .postRequest(201)
     expect(articleResponse.article.title).shouldEqual('Test_No_krot')
@@ -48,19 +31,16 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
 
     const articlesResponse = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
     expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot')
 
     await api
         .path(`/articles/${slugId}`)
-        .headers({ Authorization: authToken })
         .deleteRequest(204)
 
     const articlesResponseTwo = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
     expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot')
@@ -69,7 +49,6 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
 test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
     const articleResponse = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .body({ "article": { "title": "NEW_Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .postRequest(201)
     expect(articleResponse.article.title).shouldEqual('NEW_Test_No_krot')
@@ -77,7 +56,6 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
 
     const updateArticleResponse = await api
         .path(`/articles/${slugId}`)
-        .headers({ Authorization: authToken })
         .body({ "article": { "title": "Test_No_krot_UPDATED", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .putRequest(200)
     expect(updateArticleResponse.article.title).shouldEqual('Test_No_krot_UPDATED')
@@ -85,19 +63,16 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
 
     const articlesResponse = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
     expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot_UPDATED')
 
     await api
         .path(`/articles/${newSlugId}`)
-        .headers({ Authorization: authToken })
         .deleteRequest(204)
 
     const articlesResponseTwo = await api
         .path('/articles')
-        .headers({ Authorization: authToken })
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
     expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot_UPDATED')
