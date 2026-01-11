@@ -9,6 +9,7 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "@types/node": "^25.0.2"
+    "@types/node": "^25.0.2",
+    "ajv": "^8.17.1"
   }
 }
