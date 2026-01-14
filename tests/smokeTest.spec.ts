@@ -9,6 +9,7 @@ test('GET Articles Test', async ({ api }) => {
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
 
+    await expect(response).shouldMatchSchema('articles', 'GET_articles')
     expect(response.articles.length).shouldBeLessThanOrEqual(10)
     expect(response.articlesCount).shouldEqual(10)
 })
@@ -18,7 +19,7 @@ test('GET Tags Test', async ({ api }) => {
         .path('/tags')
         .getRequest(200)
 
-    expect(response).shouldMatchSchema('tags', 'GET_tags')
+    await expect(response).shouldMatchSchema('tags', 'GET_tags', true)
     expect(response.tags[0]).shouldEqual('Test')
     expect(response.tags.length).shouldBeLessThanOrEqual(10)
 })
@@ -28,6 +29,8 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .body({ "article": { "title": "Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
         .postRequest(201)
+
+    await expect(articleResponse).shouldMatchSchema('articles', 'POST_articles')
     expect(articleResponse.article.title).shouldEqual('Test_No_krot')
     const slugId = articleResponse.article.slug
 
