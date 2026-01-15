@@ -1,6 +1,7 @@
 import { test } from '..//utils/fixtures';
 import { expect } from '../utils/custom-expect';
 import { validateSchema } from '../utils/schema-validator';
+import articleRequestPayload from '../request-objects/POST-article.json'
 
 
 test('GET Articles Test', async ({ api }) => {
@@ -25,20 +26,22 @@ test('GET Tags Test', async ({ api }) => {
 })
 
 test('CREATE And DELETE Articles Test', async ({ api }) => {
+    const articlePayload = JSON.parse(JSON.stringify(articleRequestPayload))
+    articlePayload.article.title = "This is an object title"
     const articleResponse = await api
         .path('/articles')
-        .body({ "article": { "title": "Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
+        .body(articlePayload)
         .postRequest(201)
 
     await expect(articleResponse).shouldMatchSchema('articles', 'POST_articles')
-    expect(articleResponse.article.title).shouldEqual('Test_No_krot')
+    expect(articleResponse.article.title).shouldEqual('This is an object title')
     const slugId = articleResponse.article.slug
 
     const articlesResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot')
+    expect(articlesResponse.articles[0].title).shouldEqual('This is an object title')
 
     await api
         .path(`/articles/${slugId}`)
@@ -48,7 +51,7 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot')
+    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('This is an object title')
 })
 
 test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
