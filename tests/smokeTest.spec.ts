@@ -1,7 +1,6 @@
 import { test } from '..//utils/fixtures';
 import { expect } from '../utils/custom-expect';
-import { validateSchema } from '../utils/schema-validator';
-import articleRequestPayload from '../request-objects/POST-article.json'
+import { getNetRandomArticle } from '../utils/data-generator';
 
 
 test('GET Articles Test', async ({ api }) => {
@@ -26,22 +25,21 @@ test('GET Tags Test', async ({ api }) => {
 })
 
 test('CREATE And DELETE Articles Test', async ({ api }) => {
-    const articlePayload = JSON.parse(JSON.stringify(articleRequestPayload))
-    articlePayload.article.title = "This is an object title"
+    const articlePayload = getNetRandomArticle()
     const articleResponse = await api
         .path('/articles')
         .body(articlePayload)
         .postRequest(201)
 
     await expect(articleResponse).shouldMatchSchema('articles', 'POST_articles')
-    expect(articleResponse.article.title).shouldEqual('This is an object title')
+    expect(articleResponse.article.title).shouldEqual(articlePayload.article.title)
     const slugId = articleResponse.article.slug
 
     const articlesResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponse.articles[0].title).shouldEqual('This is an object title')
+    expect(articlesResponse.articles[0].title).shouldEqual(articlePayload.article.title)
 
     await api
         .path(`/articles/${slugId}`)
@@ -51,29 +49,32 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('This is an object title')
+    expect(articlesResponseTwo.articles[0].title).not.shouldEqual(articlePayload.article.title)
 })
 
 test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
+    const articlePayload = getNetRandomArticle()
     const articleResponse = await api
         .path('/articles')
-        .body({ "article": { "title": "NEW_Test_No_krot", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
+        .body(articlePayload)
         .postRequest(201)
-    expect(articleResponse.article.title).shouldEqual('NEW_Test_No_krot')
+    expect(articleResponse.article.title).shouldEqual(articlePayload.article.title)
     const slugId = articleResponse.article.slug
 
+
+    const articlePayloadUpdated = getNetRandomArticle()
     const updateArticleResponse = await api
         .path(`/articles/${slugId}`)
-        .body({ "article": { "title": "Test_No_krot_UPDATED", "description": "TestDescr1", "body": "TestBody1", "tagList": [] } })
+        .body(articlePayloadUpdated)
         .putRequest(200)
-    expect(updateArticleResponse.article.title).shouldEqual('Test_No_krot_UPDATED')
+    expect(updateArticleResponse.article.title).shouldEqual(articlePayloadUpdated.article.title)
     const newSlugId = updateArticleResponse.article.slug
 
     const articlesResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponse.articles[0].title).shouldEqual('Test_No_krot_UPDATED')
+    expect(articlesResponse.articles[0].title).shouldEqual(articlePayloadUpdated.article.title)
 
     await api
         .path(`/articles/${newSlugId}`)
@@ -83,5 +84,5 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articlesResponseTwo.articles[0].title).not.shouldEqual('Test_No_krot_UPDATED')
+    expect(articlesResponseTwo.articles[0].title).not.shouldEqual(articlePayloadUpdated.article.title)
 })
