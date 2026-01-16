@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: [['html'], ['list']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    trace:'retain-on-failure'
+    trace: 'retain-on-failure'
   },
 
   /* Configure projects for major browsers */
