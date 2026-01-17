@@ -19,7 +19,7 @@ test('GET Tags Test', async ({ api }) => {
         .path('/tags')
         .getRequest(200)
 
-    await expect(response).shouldMatchSchema('tags', 'GET_tags', true)
+    await expect(response).shouldMatchSchema('tags', 'GET_tags')
     expect(response.tags[0]).shouldEqual('Test')
     expect(response.tags.length).shouldBeLessThanOrEqual(10)
 })
@@ -39,6 +39,7 @@ test('CREATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
+    await expect(articlesResponse).shouldMatchSchema('articles', 'GET_articles')
     expect(articlesResponse.articles[0].title).shouldEqual(articlePayload.article.title)
 
     await api
@@ -67,6 +68,7 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .path(`/articles/${slugId}`)
         .body(articlePayloadUpdated)
         .putRequest(200)
+    await expect(updateArticleResponse).shouldMatchSchema('articles', 'PUT_articles')
     expect(updateArticleResponse.article.title).shouldEqual(articlePayloadUpdated.article.title)
     const newSlugId = updateArticleResponse.article.slug
 
@@ -74,6 +76,7 @@ test('CREATE, UPDATE And DELETE Articles Test', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
+    await expect(articlesResponse).shouldMatchSchema('articles', 'GET_articles')
     expect(articlesResponse.articles[0].title).shouldEqual(articlePayloadUpdated.article.title)
 
     await api
